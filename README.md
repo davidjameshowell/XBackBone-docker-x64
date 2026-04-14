@@ -1,158 +1,122 @@
 
-# About this Repo
+# XBackBone Docker Image
 
-This is the Docker image for [XBackBone](https://github.com/SergiX44/XBackBone) ~ based on [webdevops/php-nginx](https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html).
+This repository packages [XBackBone](https://github.com/SergiX44/XBackBone) on top of [webdevops/php-nginx](https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html) and publishes the image to GitHub Container Registry.
 
-# Supported tags and respective `Dockerfile`
--	[`latest` (**THIS REPO**/src/Dockerfile)]
--	[`3.3`,`3.3.3` (*src/Dockerfile*)]
--	[`3.2`,`3.2.0` (*src/Dockerfile*)]
--	[`3.1`,`3.1.4` (*src/Dockerfile*)]
--	[`3.0`,`3.0.2`, (*src/Dockerfile*)]
--	[`2.6`,`2.6.5` (*src/Dockerfile*)]
--	[`2.6.3` (*src/Dockerfile*)]
--	[`2.6.0` (*src/Dockerfile*)]
--	[`2.5`,`2.5.3` (*src/Dockerfile*)]
--	[`2.5.0` (*src/Dockerfile*)]
--	[`2.4`, `2.4.1`, (*src/Dockerfile*)]
--	[`dev` (*dev/src/Dockerfile*)](https://github.com/Pe46dro/XBackBone-docker/tree/dev)
+## Image publishing
 
-# Quick reference
+GitHub Actions builds and publishes `linux/amd64` images to `ghcr.io/davidjameshowell/xbackbone-docker-x64` on pushes to `main`, tags, and manual workflow runs.
 
--	**Where to file issues**:  
-	[https://github.com/Pe46dro/XBackBone-docker/issues](https://github.com/Pe46dro/XBackBone-docker/issues)
-
--	**Supported architectures**: `amd64`
-
--	**Supported Docker versions**:  
-	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
-
-# How to use this image
-
-You can use the following command to start the container and map the ports to the host:
+To pull the latest image:
 
 ```console
-$ docker run -p 80:80 \
+docker pull ghcr.io/davidjameshowell/xbackbone-docker-x64:latest
+```
+
+## Run the container
+
+```console
+docker run -p 80:80 \
     -e APP_NAME=XBackBone \
-    -e URL=http:\/\/127.0.0.1 \
+    -e URL=http://127.0.0.1 \
     --name xbb \
-    pe46dro/xbackbone-docker
+    ghcr.io/davidjameshowell/xbackbone-docker-x64:latest
 ```
 
-## Container shell access
-Nginx erver log is available through Docker's container log:
+Container logs are available with `docker logs xbb`.
 
-```console
-$ docker logs xbb
-```
+## Build locally
 
-## Environment Variables
-When you start this image, you can adjust the configuration by passing one or more environment variables on the `docker run` command line.
-
-### `APP_NAME`
-This will specify the app name, if none is provided the default is `XBackBone`
-`-e APP_NAME=XBackBone`
-
-### `URL`
-This will specify the app url, slashes need to be escaped like follow
-`-e URL=http:\/\/127.0.0.1`
-
-### `GENERATE_RELEASE=TRUE` *dev-only*
-If set, this environment variable will generate a release zip and will place it on `srv/xbb/storage`
-
-## Build Args Variables
-When you build the image yourself, you can adjust the version using the `--build-arg variable=value` parameter on the `docker build` command line.
-
-### `XBACKBONE_VERSION`
-You can specify the tag from [XBackBone](https://github.com/SergiX44/XBackBone/releases) release and download the desired one
-
-## Where to Store Data
-### Available mount point
-*	/app/storage
-*	/app/resources/database
-*	/app/logs
-*	/app/config _(to keep config files - **Docker container only**)_
-
-### Permissions
-The folder on host system need to have both **UID** and **GID** *1000*
-
-### PHP Customization 
-
-You can specify eg. `php.memory_limit=256M` as dynamic env variable which will set `memory_limit = 256M` as php setting.
-Refer to [webdevops documentation](https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#php-ini-variables) for more details
-
-| Environment variable                  	| Description                             	| Default   	 	 	|
-|---------------------------------------	|-----------------------------------------	|-----------	 	 	|
-| `php.{setting-key}`                   	| Sets the `{setting-key}` as php setting 	| 	 	 	 	|
-| `PHP_DATE_TIMEZONE`                   	| `date.timezone`                         	| `UTC` 	 	 	|
-| `PHP_DISPLAY_ERRORS`                  	| `display_errors`                        	| `0` 	 	 	 	|
-| `PHP_MEMORY_LIMIT`                    	| `memory_limit`                          	| `512M` 	 	 	|
-| `PHP_MAX_EXECUTION_TIME`              	| `max_execution_time`                    	| `300` 	 	 	|
-| `PHP_POST_MAX_SIZE`                   	| `post_max_size`                         	| `50M` 	 	 	|
-| `PHP_UPLOAD_MAX_FILESIZE`             	| `upload_max_filesize`                   	| `50M` 	 	 	|
-| `PHP_OPCACHE_MEMORY_CONSUMPTION`      	| `opcache.memory_consumption`            	| `256` 	 	 	|
-| `PHP_OPCACHE_MAX_ACCELERATED_FILES`   	| `opcache.max_accelerated_files`         	| `7963` 	 	 	|
-| `PHP_OPCACHE_VALIDATE_TIMESTAMPS`     	| `opcache.validate_timestamps`           	| `default` 	 	 	|
-| `PHP_OPCACHE_REVALIDATE_FREQ`         	| `opcache.revalidate_freq`               	| `default` 	 	 	|
-| `PHP_OPCACHE_INTERNED_STRINGS_BUFFER` 	| `opcache.interned_strings_buffer`       	| `16` 	 	 	 	|
-| ``FPM_PROCESS_MAX``       	        	| ``process.max``                             	| ``distribution default`` 	|
-| ``FPM_PM_MAX_CHILDREN``     		      	| ``pm.max_children``                    	| ``distribution default`` 	|
-| ``FPM_PM_START_SERVERS``      	    	| ``pm.start_servers``                      	| ``distribution default`` 	|
-| ``FPM_PM_MIN_SPARE_SERVERS``      		| ``pm.min_spare_servers``               	| ``distribution default`` 	|
-| ``FPM_PM_MAX_SPARE_SERVERS``      		| ``pm.max_spare_servers``               	| ``distribution default`` 	|
-| ``FPM_PROCESS_IDLE_TIMEOUT``      		| ``pm.process_idle_timeout``                 	| ``distribution default`` 	|
-| ``FPM_MAX_REQUESTS``              		| ``pm.max_requests``                          	| ``distribution default`` 	|
-| ``FPM_REQUEST_TERMINATE_TIMEOUT`` 		| ``request_terminate_timeout``                	| ``distribution default`` 	|
-| ``FPM_RLIMIT_FILES``              		| ``rlimit_files``                             	| ``distribution default`` 	|
-| ``FPM_RLIMIT_CORE``               		| ``rlimit_core``                           	| ``distribution default`` 	|
-
-
-
-#### Example
-```bash 
-mkdir -p /srv/xbb/storage
-mkdir -p /srv/xbb/database
-mkdir -p /srv/xbb/logs
-mkdir -p /srv/xbb/config
-
-chown -R 1000:1000 /srv/xbb
-```
-
-# MySQL Database
-
- - Clone repo
- - Customize ENV flags in xbb.env
- - Build and run
+The helper script builds the image from `docker/xbackbone/Dockerfile` and runs the same container test suite used by CI.
 
 ```bash
-git clone https://github.com/Pe46dro/XBackBone-docker.git .
-docker-compose up -d
+bash scripts/build-image.sh
 ```
 
-# LDAP Authentication
-The following environment variables are available to configure LDAP authentication:
-- ``LDAP_ENABLED``
-- ``LDAP_HOST``
-- ``LDAP_PORT``
-- ``LDAP_BASE_DOMAIN``
-- ``LDAP_USER_DOMAIN``
-- ``LDAP_RDN_ATTRIBUTE``
+Useful overrides:
 
-See the [docs](https://xbackbone.app/configuration.html#ldap-authentication) for explanation.
+- `IMAGE_TAG=xbackbone-docker:dev bash scripts/build-image.sh`
+- `XBACKBONE_VERSION=3.8.1 bash scripts/build-image.sh`
+- `RUN_TESTS=false bash scripts/build-image.sh`
 
-# Manual configuration
+## Docker Compose
 
-Sometimes, it's more convenient to supply a `config.php` file yourself. To skip the
-auto-configuration (and prevent mangling of the configuration), set the `SKIP_CONFIGURE` environment
-variable to any value.
+The repository includes a Compose stack for the application and MariaDB:
 
-# Upgrade from version < 3.1.4
-Run the following command before performing the upgrade:
-`echo '-' > YOUR_STORAGE_VOLUME/storage/.installed`
+```bash
+docker compose up -d
+```
 
-# Mantainer
- * [Pe46dro](https://github.com/Pe46dro) - Creator
+To reuse an already-built image instead of rebuilding inside Compose:
 
-# License
+```bash
+XBACKBONE_IMAGE=xbackbone-docker:local docker compose up -d --no-build
+```
 
-View [license information](LICENSE) for the software contained in this image.
+## Configuration
+
+### Environment variables
+
+- `APP_NAME`: application name shown by XBackBone. Default: `XBackBone`
+- `URL`: public application URL. Default: `http://127.0.0.1`
+- `SKIP_CONFIGURE`: disables automatic config mutation when you provide your own `config.php`
+- `DB_TYPE=mysql`: switches database configuration from SQLite to MariaDB/MySQL
+- `LDAP_ENABLED`: enables LDAP settings injection
+
+### Build arguments
+
+- `XBACKBONE_VERSION`: XBackBone release tag to download during image build
+
+Build a specific release manually:
+
+```bash
+docker build --build-arg XBACKBONE_VERSION=3.8.1 -t xbackbone-docker:3.8.1 ./docker/xbackbone
+```
+
+### Persistent data
+
+The image exposes these mount points:
+
+- `/app/storage`
+- `/app/resources/database`
+- `/app/logs`
+- `/app/config`
+
+Bind-mounted host directories should be owned by UID/GID `1000`.
+
+### Repository layout
+
+- `docker/xbackbone`: Dockerfile and image-specific config
+- `scripts`: local build and integration entrypoints
+- `tests/integration`: shell-based runtime checks
+- `env/compose.env`: tracked Compose environment file
+
+### PHP tuning
+
+You can set PHP options with environment variables such as `php.memory_limit=256M`.
+See the [webdevops PHP variable reference](https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-nginx.html#php-ini-variables) for the full list.
+
+## LDAP authentication
+
+Supported LDAP environment variables:
+
+- `LDAP_ENABLED`
+- `LDAP_HOST`
+- `LDAP_PORT`
+- `LDAP_BASE_DOMAIN`
+- `LDAP_USER_DOMAIN`
+- `LDAP_RDN_ATTRIBUTE`
+
+See the [XBackBone configuration docs](https://xbackbone.app/configuration.html#ldap-authentication) for details.
+
+## Upgrade note
+
+When upgrading from versions older than `3.1.4`, run:
+
+```bash
+echo '-' > YOUR_STORAGE_VOLUME/storage/.installed
+```
+
+## License
+
+See [LICENSE](LICENSE).
