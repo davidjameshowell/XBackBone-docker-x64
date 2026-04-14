@@ -18,7 +18,19 @@ cleanup_compose() {
     (cd "${PROJECT_ROOT}" && docker compose down -v) >/dev/null 2>&1 || true
 }
 
+restore_bind_mount_permissions() {
+    if [ ! -d "${PROJECT_ROOT}/xbb" ]; then
+        return
+    fi
+
+    docker run --rm \
+        -v "${PROJECT_ROOT}/xbb:/target" \
+        alpine:3.20 \
+        chown -R "$(id -u):$(id -g)" /target >/dev/null 2>&1 || true
+}
+
 cleanup_artifacts() {
+    restore_bind_mount_permissions
     rm -rf "${PROJECT_ROOT}/xbb"
     rm -f \
         "${PROJECT_ROOT}/cookie.txt" \
